@@ -1,0 +1,46 @@
+version: "3"
+services:
+    frontend:
+        container_name: docker_msapp_Frontend
+        build:
+            context: ./MSapp-Frontend
+            dockerfile: Dockerfile
+        image: raj/msapp-front
+        ports:
+            - "3001:3000"
+        volumes:
+            - ./MSapp-Frontend:/usr/src/app
+    backend:
+        container_name: docker_msapp_Backend
+        depends_on:
+            - postgres
+        environment: 
+            # - DATABASE_URL=postgres://test:test@postgres:5432/test  
+            - DATABASE_URL=postgres://test:test@localhost:5432/test
+        links:
+            - postgres
+        build:
+            context: ./MSapp-Backend
+            dockerfile: Dockerfile
+        image: raj/msapp-back
+        ports:
+            - "5001:5000"
+        volumes:
+            - ./MSapp-Backend:/usr/src/app
+
+    postgres:
+       image: postgres:10
+       restart: always
+       ports: 
+        - "5431:5432"
+       environment: 
+        POSTGRES_USER: test
+        POSTGRES_PASSWORD: test
+        POSTGRES_DB: test
+        # POSTGRES_HOST: postgres
+       volumes:
+        - postgres:/var/lib/postgresql/data
+    
+volumes:
+    postgres: ~
+        
